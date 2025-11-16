@@ -1,7 +1,5 @@
 import jwt from 'jsonwebtoken';
 
-const secret = process.env.JWT_SECRET;
-
 export const auth = (req, res, next) => {
     // busca o token na header da requisição
     const token = req.headers.authorization;
@@ -13,7 +11,7 @@ export const auth = (req, res, next) => {
     try {
         const tokenLimpo = token.replace('Bearer ', '');
         //verifica se o token é válido e retorna os dados dele
-        const dadosToken = jwt.verify(tokenLimpo, secret);
+        const dadosToken = jwt.verify(tokenLimpo, process.env.JWT_SECRET);
         //adiciona o id vindo do token dentro da requisição
         req.idUsuario = dadosToken.id;
         next();

@@ -4,16 +4,17 @@ import bcrypt from 'bcryptjs';
 
 const userCadastro = async (req, res) => {
     try {
-        //pega o usuario que veio da requisicao
         const user = req.body;
-        //verifica se ja existe no banco
+
         if (await userModel.getUserByEmail(user.email))
-            return  res.status(409).json({ message: 'Usuário já cadastrado' });
+            return res.status(409).json({ message: 'Usuário já cadastrado' });
+
         //hash da senha
         const senhaHash = await bcrypt.hash(user.senha, 10);
+
         //insere no banco com a senha hasheada
-        const userNovo = await userModel.insertUser(user.email, senhaHash);
-        //retona o id do novo usuario
+        await userModel.insertUser(user.email, senhaHash);
+
         res.status(201).json({ message: 'Usuário cadastrado com sucesso' });        
     } catch (error) {
         res.status(500).json({ message: "Erro ao cadastrar usuário"});
@@ -23,10 +24,9 @@ const userCadastro = async (req, res) => {
 
 const userLogin = async (req, res) => {
     try {
-        //pega o usuario que veio da requisicao
         const user = req.body;
-        //busca o usuario no banco pelo email
         const userFound = await userModel.getUserByEmail(user.email);
+        
         //verifica se existe
         if (!userFound) 
             return res.status(404).json({ message: 'Usuário não encontrado' });
