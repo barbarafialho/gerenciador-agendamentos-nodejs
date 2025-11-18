@@ -2,12 +2,12 @@ import 'dotenv/config';
 import express from 'express';
 import router from './routes/router.js';
 import cors from 'cors';
-
+import 'dotenv/config';
 
 const app = express();
 
 app.use(cors({
-    origin: "http:/localhost:5173"
+    origin: "http://localhost:5173"
 }))
 
 app.listen(3000, () => {
