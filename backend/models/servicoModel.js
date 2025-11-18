@@ -1,4 +1,4 @@
-import sql from './database/config.js';
+import sql from '../database/config.js';
 
 const getAllServicos = async () => {
     return await sql`select
