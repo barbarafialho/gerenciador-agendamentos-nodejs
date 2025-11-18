@@ -1,4 +1,4 @@
-import sql from './database/config.js';
+import sql from '../database/config.js';
 
 const getAllAtendimentos = async () => {
     return await sql`select
@@ -88,10 +88,19 @@ const deleteAtendimento = async (id) => {
     return item;
 };
 
+const getItensByAgendamento = async (fk_agendamento) => {
+    // Lógica para selecionar itens da tabela 'atendimento' pelo fk_agendamento
+    return await sql`
+        SELECT * FROM atendimento 
+        WHERE fk_agendamento = ${fk_agendamento} AND removido = false
+    `;
+};
+
 export default {
     getAllAtendimentos,
     getAtendimentoById,
     insertAtendimento,
     updateAtendimento,
+    getItensByAgendamento,
     deleteAtendimento
 };

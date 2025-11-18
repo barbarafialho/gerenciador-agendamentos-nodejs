@@ -1,4 +1,4 @@
-import sql from './database/config.js';
+import sql from '../database/config.js';
 
 const getAllProfissionais = async () => {
     return await sql`select * from profissional where removido = false`;

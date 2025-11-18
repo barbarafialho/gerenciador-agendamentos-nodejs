@@ -1,4 +1,4 @@
-import sql from './database/config.js';
+import sql from '../database/config.js';
 
 const getUserByEmail = async (email) => {
     const [user] = await sql`select * from usuario where email = ${email}`;
