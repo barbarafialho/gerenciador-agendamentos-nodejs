@@ -1,127 +1,180 @@
-<template>
-  <div class="dashboard">
-
-    <h1>Dashboard</h1>
-
-    <!-- Card de quantidade -->
-    <div class="cards">
-      <div class="card-default">
-        <h3>Atendimentos Hoje</h3>
-        <p class="card-number">{{ atendimentosHoje }}</p>
-      </div>
-    </div>
-
-    <!-- Tabela -->
-    <h2 style="margin-top: 30px;">Atendimentos do Dia</h2>
-
-    <table class="tabela">
-      <thead>
-        <tr>
-          <th class="id-hidden">ID</th>
-          <th>Cliente</th>
-          <th>Profissional</th>
-          <th>Serviço</th>
-          <th>Horário</th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr v-for="item in atendimentosDia" :key="item.id">
-          <td class="id-hidden">{{ item.id }}</td>
-          <td>{{ item.nome_cliente }}</td>
-          <td>{{ item.nome_profissional }}</td>
-          <td>{{ item.nome_servico }}</td>
-          <td>{{ item.hora }}</td>
-        </tr>
-
-        <tr v-if="atendimentosDia.length === 0">
-          <td colspan="5" style="text-align:center; padding: 15px; color:#777;">
-            Nenhum atendimento hoje.
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-  </div>
-</template>
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import agendamentoService from '@/services/agendamentoService'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
+import { Calendar, Scissors, Users } from 'lucide-vue-next'
 
-// estado
+const carregando = ref(true)
+const erro = ref("")
 const atendimentosHoje = ref(0)
-const atendimentosDia = ref([])
+const profissionais = ref(0)
+const servicos = ref(0)
+const lista = ref([])
 
-onMounted(() => {
-  carregarDashboard()
-})
+onMounted(() => carregar())
 
-async function carregarDashboard() {
+async function carregar() {
   try {
+    carregando.value = true
     const hoje = new Date().toISOString().split('T')[0]
-
-    // pega todos os atendimentos
     const res = await agendamentoService.getAll()
-    const lista = Array.isArray(res.data) ? res.data : []
+    const dados = res.data || []
 
-    // filtra apenas atendimentos do dia
-    const hojeLista = lista.filter(a => a.data === hoje)
+    lista.value = dados.filter(a => a.data === hoje)
+    atendimentosHoje.value = lista.value.length
+    profissionais.value = new Set(dados.map(a => a.nome_profissional)).size
+    servicos.value = new Set(dados.map(a => a.nome_servico)).size
 
-    atendimentosHoje.value = hojeLista.length
-    atendimentosDia.value = hojeLista
-
-  } catch (err) {
-    console.error('Erro ao carregar dashboard:', err)
+  } catch (e) {
+    erro.value = "Não foi possível carregar os dados."
+  } finally {
+    carregando.value = false
   }
 }
 </script>
 
+<template>
+  <div class="dashboard-container">
+    <div class="header-area">
+      <h1>Visão Geral</h1>
+      <p class="date-display">{{ new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' }) }}</p>
+    </div>
+
+    <div v-if="carregando" class="loading-area"><LoadingSpinner /></div>
+
+    <div v-else>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="icon-box pink"><Calendar /></div>
+          <div class="stat-info">
+            <h3>Agendamentos Hoje</h3>
+            <p class="stat-value">{{ atendimentosHoje }}</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="icon-box purple"><Users /></div>
+          <div class="stat-info">
+            <h3>Profissionais</h3>
+            <p class="stat-value">{{ profissionais }}</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="icon-box rose"><Scissors /></div>
+          <div class="stat-info">
+            <h3>Serviços Ativos</h3>
+            <p class="stat-value">{{ servicos }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="recent-section">
+        <h2>Próximos Atendimentos</h2>
+        
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Horário</th>
+                <th>Cliente</th>
+                <th>Profissional</th>
+                <th>Serviço</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in lista" :key="item.id">
+                <td style="font-weight: bold; color: #e11d48;">{{ item.hora }}</td>
+                <td>{{ item.nome_cliente }}</td>
+                <td>{{ item.nome_profissional }}</td>
+                <td>
+                  <span class="badge">{{ item.nome_servico }}</span>
+                </td>
+              </tr>
+              <tr v-if="lista.length === 0">
+                <td colspan="4" class="empty-state">Nenhum atendimento para hoje.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <style scoped>
-.dashboard {
-  padding: 20px;
+.header-area {
+  margin-bottom: 30px;
 }
 
-.cards {
-  display: flex;
-  gap: 20px;
-  margin-top: 20px;
+.date-display {
+  color: #6b7280;
+  text-transform: capitalize;
+  margin-top: -10px;
 }
 
-.card-number {
-  font-size: 32px;
-  font-weight: bold;
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 40px;
 }
 
-/* tabela */
-.tabela {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
+.stat-card {
   background: white;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
+  padding: 24px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+  border: 1px solid #fce7f3;
 }
 
-.tabela th {
-  background: #1e1e2f;
-  color: #fff;
-  padding: 12px;
-  text-align: left;
+.icon-box {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
 }
 
-.tabela td {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
+.icon-box.pink { background: #ec4899; }
+.icon-box.purple { background: #8b5cf6; }
+.icon-box.rose { background: #e11d48; }
+
+.stat-info h3 {
+  font-size: 0.9rem;
+  color: #6b7280;
+  font-weight: 500;
 }
 
-.tabela tr:hover {
-  background: #f8f8f8;
+.stat-value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1f2937;
 }
 
-/* ID oculto */
-.id-hidden {
-  display: none;
+.recent-section h2 {
+  font-size: 1.2rem;
+  color: #374151;
+  margin-bottom: 16px;
+}
+
+.badge {
+  background: #fce7f3;
+  color: #9d174d;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #9ca3af;
 }
 </style>
