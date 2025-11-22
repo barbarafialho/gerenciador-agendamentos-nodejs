@@ -5,7 +5,6 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(
-    //pega o token e o inclui no cabeçalho de toda requisição
     config => {
         const token = localStorage.getItem('token');
         if (token)

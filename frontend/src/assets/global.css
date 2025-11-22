@@ -1,50 +1,67 @@
-/* Reset básico */
+:root {
+  --primary: #e11d48;
+  --primary-hover: #be123c;
+  --bg-body: #fff1f2;
+  --text-main: #374151;
+  --bg-white: #ffffff;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
 }
 
 body {
-  font-family: 'Inter', sans-serif;
-  background: #f4f4f4;
-  color: #333;
+  background-color: var(--bg-body);
+  color: var(--text-main);
 }
 
-/* Cores padrão do projeto */
-:root {
-  --primary: #4f46e5;
-  --primary-light: #6366f1;
-  --bg-card: #ffffff;
-  --text-dark: #1e1e1e;
-  --radius: 12px;
-  --shadow: 0 2px 10px rgba(0,0,0,0.08);
+h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #881337;
+  margin-bottom: 1.5rem;
 }
 
-/* Classe para qualquer card do sistema */
-.card-default {
-  background: var(--bg-card);
-  padding: 20px;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  transition: .2s;
-}
-
-.card-default:hover {
-  transform: translateY(-3px);
-}
-
-/* Botão padrão */
-.btn {
-  background: var(--primary);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius);
-  padding: 10px 18px;
+button {
   cursor: pointer;
-  transition: .2s;
 }
 
-.btn:hover {
-  background: var(--primary-light);
+.table-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background-color: #ffe4e6;
+  color: #881337;
+  font-weight: 600;
+  text-align: left;
+  padding: 16px;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+td {
+  padding: 16px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #4b5563;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background-color: #fff0f3;
 }

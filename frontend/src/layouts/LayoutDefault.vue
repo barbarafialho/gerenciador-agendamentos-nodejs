@@ -1,27 +1,26 @@
 <template>
-  <div class="layout">
-
-    <!-- Sidebar -->
+  <div class="layout-wrapper">
     <aside class="sidebar">
-      <h2 class="logo">Meu Sistema</h2>
+      <div class="brand">
+        <div class="logo-icon">MB</div>
+        <span class="logo-text">Mon Biju</span>
+      </div>
 
-      <nav class="menu">
-        <router-link
-          v-for="route in menuRoutes"
-          :key="route.path"
+      <nav class="nav-menu">
+        <router-link 
+          v-for="route in menuRoutes" 
+          :key="route.path" 
           :to="'/' + route.path"
-          class="menu-item"
+          class="nav-link"
         >
-          {{ route.meta.label }}
+          {{ route.meta.label || route.name }}
         </router-link>
       </nav>
     </aside>
 
-    <!-- Área principal -->
-    <main class="content">
+    <main class="main-content">
       <router-view />
     </main>
-
   </div>
 </template>
 
@@ -29,67 +28,84 @@
 import { computed } from 'vue'
 import { appRoutes } from '@/router/routes'
 
-// rotas que aparecem no menu (as rotas filhas do layout)
 const menuRoutes = computed(() => appRoutes[0].children)
 </script>
 
 <style scoped>
-/* estrutura do layout */
-.layout {
+.layout-wrapper {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
+  width: 100%;
 }
 
-/* sidebar */
 .sidebar {
-  width: 240px;
-  background: #1e1e2f;
-  color: #fff;
-  padding: 25px 20px;
+  width: 260px;
+  background: linear-gradient(180deg, #881337 0%, #be123c 100%);
+  color: white;
   display: flex;
   flex-direction: column;
+  padding: 24px;
+  box-shadow: 4px 0 10px rgba(0,0,0,0.1);
 }
 
-/* nome/logo */
-.logo {
-  font-size: 22px;
-  font-weight: bold;
-  margin-bottom: 30px;
-}
-
-/* menu */
-.menu {
+.brand {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 12px;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
 }
 
-/* links do menu */
-.menu-item {
-  color: #bdbdbd;
-  text-decoration: none;
-  padding: 10px 12px;
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: white;
+  color: #881337;
   border-radius: 8px;
-  transition: .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
 }
 
-.menu-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #fff;
+.logo-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+  letter-spacing: -0.5px;
 }
 
-/* estado ativo */
-.menu-item.router-link-active {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  font-weight: 600;
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-/* conteúdo principal */
-.content {
+.nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transform: translateX(4px);
+}
+
+.nav-link.router-link-active {
+  background: white;
+  color: #881337;
+  font-weight: 700;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.main-content {
   flex: 1;
-  background: #f5f5f5;
-  padding: 25px;
+  padding: 40px;
   overflow-y: auto;
 }
 </style>

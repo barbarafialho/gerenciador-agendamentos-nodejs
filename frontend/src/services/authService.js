@@ -2,13 +2,12 @@ import api from './api';
 
 const login = async (email, senha) => {
     const response = await api.post('/login', { email, senha });
-    // guarda o token
-    localStorage.setItem('token', response.data.token)
+    localStorage.setItem('token', response.data.token);
     return response.data;
 }
 
-const cadastro = async (nome, email, senha) => {
-    const response = await api.post('/cadastro', { nome, email, senha });
+const cadastro = async ({ email, senha }) => {
+    const response = await api.post('/cadastro', { email, senha });
     return response.data;
 }
 
