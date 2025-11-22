@@ -12,6 +12,7 @@
         <thead>
           <tr>
             <th>Nome do Serviço</th>
+            <th>Descrição</th>
             <th style="text-align: right;">Valor</th>
             <th style="width: 50px;"></th>
           </tr>
@@ -20,10 +21,13 @@
         <tbody>
           <tr v-for="s in lista" :key="s.id">
             <td>
-              <span class="service-name">{{ s.nome }}</span>
+              <span class="service-name">{{ s.nome_servico }}</span>
+            </td>
+            <td style="color: #6b7280; font-size: 0.9rem;">
+              {{ s.descricao_servico || '-' }}
             </td>
             <td style="text-align: right; font-weight: 600; color: #1f2937;">
-              R$ {{ Number(s.preco).toFixed(2) }}
+              R$ {{ Number(s.preco_servico).toFixed(2) }}
             </td>
             <td style="text-align: center;">
               <button class="btn-icon">⋮</button>
@@ -31,7 +35,7 @@
           </tr>
 
           <tr v-if="lista.length === 0">
-            <td colspan="3" class="empty-state">
+            <td colspan="4" class="empty-state">
               Nenhum serviço cadastrado.
             </td>
           </tr>
@@ -43,13 +47,17 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import servicoService from '@/services/authService'
+import servicoService from '@/services/servicoService'
 
 const lista = ref([])
 
 onMounted(async () => {
-  const res = await servicoService.getAll()
-  lista.value = res.data
+  try {
+    const res = await servicoService.getAll()
+    lista.value = res.data
+  } catch (error) {
+    console.error("Erro ao buscar serviços", error)
+  }
 })
 </script>
 
@@ -87,6 +95,7 @@ onMounted(async () => {
   border: none;
   color: #9ca3af;
   font-size: 1.2rem;
+  cursor: pointer;
 }
 
 .empty-state {

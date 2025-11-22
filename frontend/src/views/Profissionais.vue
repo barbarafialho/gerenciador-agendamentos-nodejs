@@ -1,13 +1,17 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import profissionalApi from '../api/profissionalApi';
+import profissionalService from '../services/profissionalService';
 import { User } from 'lucide-vue-next';
 
 const profissionais = ref([]);
 
 onMounted(async () => {
-    const res = await profissionalApi.getAll();
+  try {
+    const res = await profissionalService.getAll();
     profissionais.value = res.data;
+  } catch (error) {
+    console.error("Erro ao carregar profissionais", error);
+  }
 });
 </script>
 
@@ -23,8 +27,11 @@ onMounted(async () => {
         <div class="avatar-placeholder">
           <User size="32" />
         </div>
-        <h3 class="nome">{{ p.nome }}</h3>
-        <p class="cargo">Especialista</p>
+        <h3 class="nome">{{ p.nome_profissional }}</h3>
+        <p class="cargo">{{ p.especialidade || 'Cabeleireiro(a)' }}</p>
+        <div class="contato-info" v-if="p.telefone">
+          📱 {{ p.telefone }}
+        </div>
         <button class="btn-ver">Ver Agenda</button>
       </div>
 
@@ -51,6 +58,7 @@ onMounted(async () => {
   border-radius: 8px;
   font-weight: 600;
   transition: all 0.2s;
+  cursor: pointer;
 }
 
 .btn-add:hover {
@@ -59,7 +67,7 @@ onMounted(async () => {
 
 .grid-profissionais {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 24px;
 }
 
@@ -71,6 +79,9 @@ onMounted(async () => {
   box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
   border: 1px solid #fce7f3;
   transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .card-profissional:hover {
@@ -87,30 +98,40 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 16px;
+  margin-bottom: 16px;
 }
 
 .nome {
   font-size: 1.1rem;
+  font-weight: 700;
   color: #1f2937;
   margin-bottom: 4px;
 }
 
 .cargo {
   font-size: 0.9rem;
+  color: #e11d48;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.contato-info {
+  font-size: 0.8rem;
   color: #6b7280;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .btn-ver {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   background: #f3f4f6;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   color: #4b5563;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
 .btn-ver:hover {

@@ -3,17 +3,18 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="logo-icon">MB</div>
-        <span class="logo-text">Mon Biju</span>
+        <span class="logo-text">Mon Biju Salon</span>
       </div>
 
       <nav class="nav-menu">
         <router-link 
-          v-for="route in menuRoutes" 
-          :key="route.path" 
-          :to="'/' + route.path"
+          v-for="item in menuItems" 
+          :key="item.path" 
+          :to="item.path"
           class="nav-link"
         >
-          {{ route.meta.label || route.name }}
+          <component :is="item.icon" class="nav-icon" />
+          {{ item.label }}
         </router-link>
       </nav>
     </aside>
@@ -25,10 +26,14 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { appRoutes } from '@/router/routes'
+import { LayoutDashboard, Calendar, Users, Scissors } from 'lucide-vue-next'
 
-const menuRoutes = computed(() => appRoutes[0].children)
+const menuItems = [
+  { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+  { label: 'Agendamentos', path: '/atendimentos', icon: Calendar },
+  { label: 'Profissionais', path: '/profissionais', icon: Users },
+  { label: 'Serviços', path: '/servicos', icon: Scissors }
+]
 </script>
 
 <style scoped>
@@ -40,7 +45,7 @@ const menuRoutes = computed(() => appRoutes[0].children)
 
 .sidebar {
   width: 260px;
-  background: linear-gradient(180deg, #881337 0%, #be123c 100%);
+  background: linear-gradient(180deg, #be123c 0%, #881337 100%);
   color: white;
   display: flex;
   flex-direction: column;
@@ -61,7 +66,7 @@ const menuRoutes = computed(() => appRoutes[0].children)
   width: 40px;
   height: 40px;
   background: white;
-  color: #881337;
+  color: #be123c;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -82,6 +87,9 @@ const menuRoutes = computed(() => appRoutes[0].children)
 }
 
 .nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   padding: 12px 16px;
@@ -98,14 +106,20 @@ const menuRoutes = computed(() => appRoutes[0].children)
 
 .nav-link.router-link-active {
   background: white;
-  color: #881337;
+  color: #be123c;
   font-weight: 700;
   box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .main-content {
   flex: 1;
   padding: 40px;
   overflow-y: auto;
+  background-color: #fff1f2;
 }
 </style>

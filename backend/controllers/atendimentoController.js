@@ -71,12 +71,10 @@ const update = async (req, res) => {
   }
 };
 
-// FUNÇÃO NOVA: Corresponde à rota: router.get('/agendamentos/:idAgendamento/itens', ...)
 const getItensByAgendamento = async (req, res) => {
   try {
     const { idAgendamento } = req.params;
 
-    // ATENÇÃO: Você precisa criar a função 'getItensByAgendamento' no seu atendimentoModel.js
     const itens = await atendimentoModel.getItensByAgendamento(idAgendamento);
 
     res.status(200).json(itens);
@@ -86,12 +84,9 @@ const getItensByAgendamento = async (req, res) => {
   }
 };
 
-// RENOMEADO de 'deleteAtendimento' para 'deleteItem'
-// Corresponde à rota: router.post('/atendimentos/delete/:id', ...)
 const deleteItem = async (req, res) => {
   try {
     const { id } = req.params;
-    // Chama a função deleteAtendimento do Model (função original)
     await atendimentoModel.deleteAtendimento(id);
     res
       .status(200)
@@ -106,7 +101,6 @@ export default {
   getAll,
   getById,
   update,
-  // Exportando as funções com os nomes corretos para o router.js
   addServicoToAgendamento,
   getItensByAgendamento,
   deleteItem,
