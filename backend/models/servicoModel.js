@@ -12,7 +12,7 @@ const getAllServicos = async () => {
     from servico s
     inner join profissional p 
     on p.id = s.fk_profissional
-    where removido = false`;
+    where s.removido = false`;
 }
 
 const getServicoById = async (id) => {

@@ -2,6 +2,13 @@ import LayoutDefault from '@/layouts/LayoutDefault.vue'
 import Dashboard from '@/views/Dashboard.vue'
 import Cadastro from '@/views/Cadastro.vue'
 import Login from '@/views/Login.vue'
+import Profissionais from '@/views/Profissionais.vue'
+import Servicos from '@/views/Servicos.vue'
+import Atendimentos from '@/views/Atendimentos.vue'
+import AgendamentoNovo from '@/views/AgendamentoNovo.vue' 
+import ProfissionalNovo from '@/views/ProfissionalNovo.vue'
+import ServicoNovo from '@/views/ServicoNovo.vue'
+
 
 export const appRoutes = [
   {
@@ -31,22 +38,35 @@ export const appRoutes = [
       {
         path: 'profissionais',
         name: 'Profissionais',
-        component: () => import('@/views/Profissionais.vue'),
+        component: Profissionais,
+      },
+      {
+        path: 'profissional-novo/:id?', 
+        name: 'ProfissionalNovo',
+        component: ProfissionalNovo,
+        meta: { hideInMenu: true }
       },
       {
         path: 'servicos',
         name: 'Servicos',
-        component: () => import('@/views/Servicos.vue'),
+        component: Servicos,
       },
       {
-        path: 'agendamentos',
-        name: 'Agendamentos',
-        component: () => import('@/views/Agendamentos.vue'),
+        path: 'servico-novo/:id?',
+        name: 'ServicoNovo',
+        component: ServicoNovo,
+        meta: { hideInMenu: true }
       },
       {
-        path: 'atendimentos',
+        path: 'atendimentos', 
         name: 'Atendimentos',
-        component: () => import('@/views/Atendimentos.vue'),
+        component: Atendimentos,
+      },
+      {
+        path: 'agendamento-novo', 
+        name: 'NovoAgendamento',
+        component: AgendamentoNovo, 
+        meta: { label: 'Novo Agendamento', hideInMenu: true }
       }
     ]
   }
