@@ -26,12 +26,10 @@ const getById = async (req, res) => {
   }
 };
 
-// RENOMEADO de 'create' para 'addServicoToAgendamento'
-// Corresponde à rota: router.post('/atendimentos', ...)
-const addServicoToAgendamento = async (req, res) => {
+const create = async (req, res) => {
   try {
     const { fk_agendamento, fk_servico, preco_final, observacao } = req.body;
-    // Chama a função insertAtendimento do Model (função original)
+    
     const novoAtendimento = await atendimentoModel.insertAtendimento(
       fk_agendamento,
       fk_servico,
@@ -71,7 +69,7 @@ const update = async (req, res) => {
   }
 };
 
-const getItensByAgendamento = async (req, res) => {
+/*const getItensByAgendamento = async (req, res) => {
   try {
     const { idAgendamento } = req.params;
 
@@ -82,7 +80,7 @@ const getItensByAgendamento = async (req, res) => {
     console.error("Erro ao buscar itens de agendamento:", error);
     res.status(500).json({ message: "Erro ao buscar itens de agendamento" });
   }
-};
+};*/
 
 const deleteItem = async (req, res) => {
   try {
@@ -101,7 +99,7 @@ export default {
   getAll,
   getById,
   update,
-  addServicoToAgendamento,
-  getItensByAgendamento,
+  create,
+  //getItensByAgendamento,
   deleteItem,
 };

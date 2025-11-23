@@ -28,13 +28,16 @@ router.put('/servicos/:id', auth, servicoController.update);
 router.post('/servicos/delete/:id', auth, servicoController.deleteServico); 
 
 router.get('/agendamentos', auth, agendamentoController.getAll);
+router.get('/agendamentos/:id', auth, agendamentoController.getById);
 router.post('/agendamentos', auth, agendamentoController.create);
 router.put('/agendamentos/:id', auth, agendamentoController.update);
 router.post('/agendamentos/delete/:id', auth, agendamentoController.deleteAgendamento); 
 
-
-router.post('/atendimentos', auth, atendimentoController.addServicoToAgendamento);
-router.get('/agendamentos/:idAgendamento/itens', auth, atendimentoController.getItensByAgendamento);
+router.get('/atendimentos', auth, atendimentoController.getAll);
+router.get('/atendimentos/:id', auth, atendimentoController.getById);
+router.post('/atendimentos', auth, atendimentoController.create);
+router.put('/atendimentos/:id', auth, atendimentoController.update);
+//router.get('/agendamentos/:idAgendamento/itens', auth, atendimentoController.getItensByAgendamento);
 router.post('/atendimentos/delete/:id', auth, atendimentoController.deleteItem); 
 
 export default router;
