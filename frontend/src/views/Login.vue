@@ -1,3 +1,71 @@
+<template>
+  <div class="login-container">
+    <div class="login-card">
+      
+      <div class="header">
+        <h1 class="brand-name">Mon Biju Salon</h1>
+        <p class="welcome-text">Bem-vindo de volta!</p>
+      </div>
+
+      <div v-if="error" class="alert alert-error">
+        <span>{{ error }}</span>
+      </div>
+
+      <div v-if="success" class="alert alert-success">
+        <span>{{ success }}</span>
+      </div>
+
+      <form @submit.prevent="login" class="login-form">
+        
+        <div class="input-group">
+          <label for="email">Email</label>
+          <div class="input-wrapper">
+            <Mail class="icon" size="20" />
+            <input 
+              id="email"
+              v-model="email" 
+              type="email" 
+              placeholder="seuemail@email.com" 
+              required 
+            />
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label for="senha">Senha</label>
+          <div class="input-wrapper">
+            <Lock class="icon" size="20" />
+            <input 
+              id="senha"
+              v-model="senha" 
+              type="password" 
+              placeholder="••••••••" 
+              required 
+            />
+          </div>
+        </div>
+
+        <button 
+          :disabled="loading" 
+          class="btn-login"
+        >
+          <span v-if="loading" class="loading-state">Entrando...</span>
+          <span v-else>Entrar</span>
+        </button>
+
+      </form>
+
+      <div class="footer">
+        <p>Não tem conta?</p>
+        <button @click="router.push('/cadastro')" class="link-create">
+          Criar conta
+        </button>
+      </div>
+
+    </div>
+  </div>
+</template>
+
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -34,69 +102,165 @@ const login = async () => {
 }
 </script>
 
-<template>
-  <div class="min-h-screen flex items-center justify-center bg-rose-100">
-    <div class="bg-white shadow-2xl rounded-2xl p-10 w-full max-w-md">
+<style scoped>
+.login-container {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fff1f2; 
+  font-family: 'Inter', sans-serif;
+  padding: 20px;
+}
 
-      <h1 class="text-3xl font-bold text-rose-700 text-center mb-8">
-        Mon Biju Salon
-      </h1>
+.login-card {
+  background: white;
+  width: 100%;
+  max-width: 420px;
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ffe4e6;
+}
 
-      <div v-if="error" class="bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-center">
-        {{ error }}
-      </div>
+.header {
+  text-align: center;
+  margin-bottom: 32px;
+}
 
-      <div v-if="success" class="bg-green-100 text-green-700 p-3 rounded-lg mb-4 text-center">
-        {{ success }}
-      </div>
+.brand-name {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #be123c; 
+  margin-bottom: 8px;
+}
 
-      <form @submit.prevent="login">
-        <div class="mb-5">
-          <label class="block mb-1 text-gray-700 font-semibold">Email</label>
-          <div class="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
-            <Mail class="w-5 h-5 text-rose-600" />
-            <input
-              v-model="email"
-              type="email"
-              class="w-full bg-transparent outline-none ml-2"
-              placeholder="seuemail@email.com"
-              required
-            />
-          </div>
-        </div>
+.welcome-text {
+  color: #6b7280;
+  font-size: 1rem;
+}
 
-        <div class="mb-6">
-          <label class="block mb-1 text-gray-700 font-semibold">Senha</label>
-          <div class="flex items-center border rounded-lg px-3 py-2 bg-gray-50">
-            <Lock class="w-5 h-5 text-rose-600" />
-            <input
-              v-model="senha"
-              type="password"
-              class="w-full bg-transparent outline-none ml-2"
-              placeholder="••••••••"
-              required
-            />
-          </div>
-        </div>
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
 
-        <button
-          :disabled="loading"
-          class="w-full bg-rose-600 hover:bg-rose-700 text-white font-semibold py-2 rounded-lg transition disabled:opacity-50"
-        >
-          {{ loading ? 'Entrando...' : 'Entrar' }}
-        </button>
-      </form>
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 
-      <p class="text-center text-gray-600 mt-6">
-        Não tem conta?
-        <button
-          @click="router.push('/cadastro')"
-          class="text-rose-600 font-bold hover:underline"
-        >
-          Criar conta
-        </button>
-      </p>
+.input-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+}
 
-    </div>
-  </div>
-</template>
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  position: absolute;
+  left: 12px;
+  color: #be123c; /* Ícone na cor do tema */
+  pointer-events: none;
+}
+
+input {
+  width: 100%;
+  padding: 12px 16px 12px 42px; /* Espaço para o ícone */
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  background-color: #f9fafb;
+  transition: all 0.2s;
+  outline: none;
+}
+
+input:focus {
+  border-color: #e11d48;
+  background-color: white;
+  box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.1);
+}
+
+.btn-login {
+  margin-top: 10px;
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(to right, #e11d48, #be123c);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s, opacity 0.2s;
+  box-shadow: 0 4px 12px rgba(190, 18, 60, 0.3);
+}
+
+.btn-login:hover {
+  opacity: 0.95;
+}
+
+.btn-login:active {
+  transform: scale(0.98);
+}
+
+.btn-login:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.footer {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #6b7280;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  align-items: center;
+}
+
+.link-create {
+  background: none;
+  border: none;
+  color: #e11d48;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0;
+}
+
+.link-create:hover {
+  text-decoration: underline;
+}
+
+/* Alertas */
+.alert {
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.alert-error {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.alert-success {
+  background-color: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+</style>
