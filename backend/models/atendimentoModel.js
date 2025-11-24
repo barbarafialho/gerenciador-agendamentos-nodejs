@@ -53,7 +53,6 @@ const getAtendimentoById = async (id) => {
     return item;
 };
 
-// INSERT padrão
 const insertAtendimento = async (fk_agendamento, fk_servico, preco_final, observacao) => {
     const [item] = await sql`
         insert into atendimento (fk_agendamento, fk_servico, preco_final, observacao)
@@ -63,7 +62,6 @@ const insertAtendimento = async (fk_agendamento, fk_servico, preco_final, observ
     return item;
 };
 
-// UPDATE padrão
 const updateAtendimento = async (id, fk_agendamento, fk_servico, preco_final, observacao) => {
     const [item] = await sql`
         update atendimento set
@@ -77,7 +75,6 @@ const updateAtendimento = async (id, fk_agendamento, fk_servico, preco_final, ob
     return item;
 };
 
-// DELETE lógico
 const deleteAtendimento = async (id) => {
     const [item] = await sql`
         update atendimento set
@@ -88,19 +85,19 @@ const deleteAtendimento = async (id) => {
     return item;
 };
 
-const getItensByAgendamento = async (fk_agendamento) => {
+/*const getItensByAgendamento = async (fk_agendamento) => {
     // Lógica para selecionar itens da tabela 'atendimento' pelo fk_agendamento
     return await sql`
         SELECT * FROM atendimento 
         WHERE fk_agendamento = ${fk_agendamento} AND removido = false
     `;
-};
+};*/
 
 export default {
     getAllAtendimentos,
     getAtendimentoById,
     insertAtendimento,
     updateAtendimento,
-    getItensByAgendamento,
+    //getItensByAgendamento,
     deleteAtendimento
 };
