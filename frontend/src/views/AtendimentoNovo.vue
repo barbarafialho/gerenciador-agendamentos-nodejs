@@ -1,17 +1,15 @@
 <template>
   <div class="page-container">
     <h1 class="page-title">{{ isEditing ? 'Editar Atendimento' : 'Registrar Atendimento' }}</h1>
-    <p class="page-subtitle">Preencha os dados do cliente, profissional e serviço realizado.</p>
+    <p class="page-subtitle">Adicione serviços realizados a um agendamento existente.</p>
 
-    <!-- Loading -->
     <div v-if="loadingLists" class="loading-box">
       <Loader2 class="spin" size="30" />
-      <span>Carregando profissionais e serviços...</span>
+      <span>Carregando dados...</span>
     </div>
 
     <div v-else class="form-card">
       
-      <!-- Alerta de Erro -->
       <div v-if="erro" class="alert alert-error">
         <AlertCircle size="18" />
         <span>{{ erro }}</span>
@@ -19,95 +17,60 @@
 
       <form @submit.prevent="salvar" class="form-grid">
         
-        <!-- Cliente -->
+        <!-- Seleção do Agendamento (FK) -->
         <div class="input-group full-width">
-          <label>Nome do Cliente</label>
+          <label>Vincular ao Agendamento</label>
           <div class="input-wrapper">
-            <User size="20" class="icon" />
-            <input type="text" v-model="form.nome_cliente" placeholder="Nome completo" required />
-          </div>
-        </div>
-
-        <!-- Profissional -->
-        <div class="input-group">
-          <label>Profissional</label>
-          <div class="input-wrapper">
-            <Users size="20" class="icon" />
-            <select v-model="form.fk_profissional" required>
-              <option value="" disabled>Selecione...</option>
-              <option v-for="p in profissionais" :key="p.id" :value="p.id">
-                {{ p.nome_profissional }}
+            <Calendar size="20" class="icon" />
+            <select v-model="form.fk_agendamento" required :disabled="isEditing">
+              <option value="" disabled>Selecione o cliente/horário...</option>
+              <option v-for="a in agendamentos" :key="a.id" :value="a.id">
+                {{ formatarData(a.data) }} às {{ a.hora }} - {{ a.nome_cliente }} ({{ a.status }})
               </option>
             </select>
           </div>
         </div>
 
-        <!-- Serviço -->
+        <!-- Seleção do Serviço (FK) -->
         <div class="input-group">
           <label>Serviço Realizado</label>
           <div class="input-wrapper">
             <Scissors size="20" class="icon" />
-            <select v-model="form.fk_servico" required>
-              <option value="" disabled>Selecione...</option>
+            <select v-model="form.fk_servico" required @change="atualizarPreco">
+              <option value="" disabled>Selecione o serviço...</option>
               <option v-for="s in servicos" :key="s.id" :value="s.id">
-                {{ s.nome_servico }} (R$ {{ Number(s.preco_servico).toFixed(2) }})
+                {{ s.nome_servico }}
               </option>
             </select>
           </div>
         </div>
 
-        <!-- Data -->
+        <!-- Preço Final -->
         <div class="input-group">
-          <label>Data</label>
+          <label>Preço Final (R$)</label>
           <div class="input-wrapper">
-            <Calendar size="20" class="icon" />
-            <input type="date" v-model="form.data" required />
-          </div>
-        </div>
-
-        <!-- Hora -->
-        <div class="input-group">
-          <label>Hora</label>
-          <div class="input-wrapper">
-            <Clock size="20" class="icon" />
-            <input type="time" v-model="form.hora" required />
-          </div>
-        </div>
-
-        <!-- Status -->
-        <div class="input-group">
-          <label>Status</label>
-          <div class="input-wrapper">
-            <select v-model="form.status" required style="font-weight: bold; color: #be123c;">
-              <option value="Agendado">Agendado</option>
-              <option value="Confirmado">Confirmado</option>
-              <option value="Em Andamento">Em Andamento</option>
-              <option value="Concluído">Concluído</option>
-              <option value="Cancelado">Cancelado</option>
-            </select>
+            <DollarSign size="20" class="icon" />
+            <input type="number" step="0.01" v-model="form.preco_final" required />
           </div>
         </div>
 
         <!-- Observação -->
         <div class="input-group full-width">
-          <label>Observação</label>
+          <label>Observações do Atendimento</label>
           <div class="input-wrapper">
             <FileText size="20" class="icon" />
-            <input type="text" v-model="form.observacao" placeholder="Detalhes adicionais (opcional)" />
+            <input type="text" v-model="form.observacao" placeholder="Ex: Desconto aplicado, produto extra usado..." />
           </div>
         </div>
 
-        <!-- Botões -->
         <div class="full-width button-row">
-          <button type="button" class="btn-secondary" @click="router.push('/atendimentos')">
-            Cancelar
-          </button>
+          <button type="button" class="btn-secondary" @click="router.push('/atendimentos')">Cancelar</button>
           <button type="submit" class="btn-primary" :disabled="loading">
             <span v-if="loading" class="loading-state">
               <Loader2 class="spin" size="20" />
               Salvando...
             </span>
-            <span v-else>{{ isEditing ? 'Atualizar' : 'Salvar Registro' }}</span>
+            <span v-else>{{ isEditing ? 'Atualizar' : 'Salvar' }}</span>
           </button>
         </div>
       </form>
@@ -118,94 +81,108 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import atendimentoService from '@/services/atendimentoService'
 import agendamentoService from '@/services/agendamentoService'
-import profissionalService from '@/services/profissionalService'
 import servicoService from '@/services/servicoService'
-import { User, Calendar, Clock, Users, Scissors, Loader2, AlertCircle, FileText } from 'lucide-vue-next'
+import { Calendar, Scissors, DollarSign, FileText, Loader2, AlertCircle, User } from 'lucide-vue-next'
 
 const router = useRouter()
 const route = useRoute()
 
-const profissionais = ref([])
+const agendamentos = ref([])
 const servicos = ref([])
 const loading = ref(false)
 const loadingLists = ref(true)
 const erro = ref("")
 
 const form = ref({
-  nome_cliente: "",
-  fk_profissional: "",
+  fk_agendamento: "",
   fk_servico: "",
-  data: "",
-  hora: "",
-  status: "Concluído", // Padrão para atendimento é concluído, mas pode mudar
+  preco_final: "",
   observacao: ""
 })
 
 const isEditing = computed(() => !!route.params.id)
 
 onMounted(async () => {
-  await carregarDados()
+  await carregarListas()
 })
 
-async function carregarDados() {
+async function carregarListas() {
   loadingLists.value = true
   erro.value = ""
-  
+
   try {
-    // Carrega Listas
-    const [resProf, resServ] = await Promise.all([
-      profissionalService.getAll(),
-      servicoService.getAll()
+    // Busca Agendamentos e Serviços para preencher os Selects
+    const [resAgend, resServ] = await Promise.all([
+      agendamentoService.getAll(), 
+      servicoService.getAll()      
     ])
     
-    profissionais.value = resProf.data || []
+    agendamentos.value = resAgend.data || []
     servicos.value = resServ.data || []
 
-    // Se for edição, carrega os dados existentes
     if (isEditing.value) {
-      const res = await agendamentoService.getById(route.params.id)
-      const dados = res.data
-      
-      form.value = {
-        nome_cliente: dados.nome_cliente,
-        fk_profissional: dados.fk_profissional,
-        fk_servico: dados.fk_servico,
-        data: dados.data ? dados.data.split('T')[0] : '',
-        hora: dados.hora,
-        status: dados.status,
-        observacao: dados.observacao || ''
+      try {
+        const res = await atendimentoService.getById(route.params.id)
+        const dados = res.data
+        
+        if (!dados) {
+           throw new Error("Atendimento não encontrado")
+        }
+
+        form.value = {
+          fk_agendamento: dados.fk_agendamento,
+          fk_servico: dados.fk_servico,
+          preco_final: dados.preco_final,
+          observacao: dados.observacao || ""
+        }
+      } catch (e) {
+        console.error("Erro ao buscar atendimento para edição:", e)
+        erro.value = "Atendimento não encontrado ou erro ao carregar. Verifique o ID."
       }
     }
   } catch (e) {
-    console.error("Erro ao carregar dados:", e)
-    erro.value = "Erro ao carregar listas ou dados do agendamento."
+    erro.value = "Erro ao carregar listas de dados (Agendamentos/Serviços)."
+    console.error(e)
   } finally {
     loadingLists.value = false
   }
 }
 
+function atualizarPreco() {
+  const servicoSelecionado = servicos.value.find(s => s.id === form.value.fk_servico)
+  if (servicoSelecionado) {
+    form.value.preco_final = servicoSelecionado.preco_servico
+  }
+}
+
+function formatarData(dataISO) {
+  if(!dataISO) return ''
+  const [ano, mes, dia] = dataISO.split('T')[0].split('-')
+  return `${dia}/${mes}/${ano}`
+}
+
 async function salvar() {
   try {
     loading.value = true
+    erro.value = ""
     
-    // Monta o payload garantindo que observação não seja null
-    const payload = {
-      ...form.value,
-      observacao: form.value.observacao || ""
-    }
-
+    const payload = { ...form.value, observacao: form.value.observacao || "" }
+    
     if (isEditing.value) {
-      await agendamentoService.update(route.params.id, payload)
-      alert("Registro atualizado com sucesso!")
+      // Usamos o ID da rota para a atualização
+      await atendimentoService.update(route.params.id, payload)
+      alert("Atendimento atualizado!")
     } else {
-      await agendamentoService.create(payload)
+      // Criação de um novo registro na tabela atendimento (N:M)
+      await atendimentoService.create(payload)
       alert("Atendimento registrado com sucesso!")
     }
     router.push('/atendimentos')
   } catch (e) {
-    console.error(e)
-    erro.value = "Erro ao salvar. Verifique se todos os campos obrigatórios estão preenchidos."
+    console.error("Erro ao salvar:", e)
+    erro.value = "Erro ao salvar: " + (e.response?.data?.message || "Verifique os dados e a conexão.")
   } finally {
     loading.value = false
   }
