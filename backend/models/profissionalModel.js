@@ -30,12 +30,27 @@ const updateProfissional = async (id, nome, telefone, especialidade) => {
 };
 
 const deleteProfissional = async (id) => {
-    const [item] = await sql`update profissional set
+    // verifica se existe serviço ativo para esse profissional
+    const dependentes = await sql`
+    select id from servico
+    where fk_profissional = ${id} and removido = false
+  `;
+
+    if (dependentes.length > 0) {
+        throw new Error("Não é possível remover o profissional: existem serviços vinculados.");
+    }
+
+    // se não tiver, faz o soft delete
+    const [item] = await sql`
+    update profissional set
     removido = true
     where id = ${id}
-    returning *`;
+    returning *
+  `;
+
     return item;
-}
+};
+
 
 export default {
     getAllProfissionais,

@@ -80,6 +80,7 @@ const deleteAtendimento = async (id) => {
         update atendimento set
             removido = true
         where id = ${id}
+        and removido = false
         returning *
     `;
     return item;

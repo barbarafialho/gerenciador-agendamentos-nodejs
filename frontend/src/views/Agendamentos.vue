@@ -14,7 +14,6 @@
             <th>Data</th>
             <th>Hora</th>
             <th>Cliente</th>
-            <th>Profissional</th>
             <th>Status</th>
             <th style="text-align: center;">Ações</th>
           </tr>
@@ -25,7 +24,6 @@
             <td>{{ formatarData(a.data) }}</td>
             <td style="font-weight: bold; color: #e11d48;">{{ a.hora }}</td>
             <td>{{ a.nome_cliente }}</td>
-            <td>{{ a.nome_profissional }}</td>
             <td>
               <span :class="['status-badge', getStatusClass(a.status)]">
                 {{ a.status || 'Agendado' }}

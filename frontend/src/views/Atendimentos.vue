@@ -61,7 +61,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import agendamentoService from '@/services/agendamentoService'
+import atendimentoService from '@/services/atendimentoService'
 import { Trash2, Edit } from 'lucide-vue-next'
 
 const router = useRouter()
@@ -69,8 +69,8 @@ const lista = ref([])
 
 onMounted(async () => {
   try {
-    // Traz a lista completa (JOIN de agendamento + atendimento + serviço + profissional)
-    const res = await agendamentoService.getAll()
+    // Traz a lista completa (JOIN de atendimento + atendimento + serviço + profissional)
+    const res = await atendimentoService.getAll()
     lista.value = res.data
   } catch (error) {
     console.error("Erro ao carregar atendimentos", error)
@@ -103,7 +103,7 @@ async function excluir(id) {
   if(!confirm("Tem certeza que deseja excluir este registro?")) return;
   
   try {
-    await agendamentoService.remove(id)
+    await atendimentoService.remove(id)
     lista.value = lista.value.filter(a => a.id !== id)
   } catch (e) {
     alert("Erro ao excluir o atendimento.")

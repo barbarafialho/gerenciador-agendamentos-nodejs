@@ -50,11 +50,25 @@ const updateServico = async (id, nome, descricao, preco, fk_profissional) => {
 };
 
 const deleteServico = async (id) => {
-    const [item] = await sql`update servico set
-    removido = true where id = ${id}
-    returning *`;
+    const dependentes = await sql`
+        select id from atendimento
+        where fk_servico = ${id} and removido = false
+    `;
+
+    if (dependentes.length > 0) {
+        throw new Error("Não é possível remover o serviço: existem atendimentos vinculados.");
+    }
+
+    const [item] = await sql`
+        update servico set
+        removido = true
+        where id = ${id}
+        returning *
+    `;
+
     return item;
-}
+};
+
 
 export default {
     getAllServicos,

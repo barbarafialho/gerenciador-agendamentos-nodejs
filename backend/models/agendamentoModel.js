@@ -31,12 +31,25 @@ const updateAgendamento = async (id, data, hora, nome_cliente, status, observaca
 };
 
 const deleteAgendamento = async (id) => {
-    const [item] = await sql`update agendamento set
-    removido = true
-    where id = ${id}
-    returning *`
+    const dependentes = await sql`
+        select id from atendimento
+        where fk_agendamento = ${id} and removido = false
+    `;
+
+    if (dependentes.length > 0) {
+        throw new Error("Não é possível remover o agendamento: existem atendimentos vinculados.");
+    }
+
+    const [item] = await sql`
+        update agendamento set
+        removido = true
+        where id = ${id}
+        returning *
+    `;
+
     return item;
-}
+};
+
 
 export default {
     getAllAgendamentos,
