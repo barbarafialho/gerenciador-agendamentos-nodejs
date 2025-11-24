@@ -2,8 +2,9 @@
   <div>
     <div class="page-header">
       <h1>Histórico de Atendimentos</h1>
-      <button class="btn-primary" @click="router.push('/agendamento-novo')">
-        + Novo Agendamento
+      <!-- CORREÇÃO: Agora leva para o formulário de Atendimento (vínculo Serviço <-> Agendamento) -->
+      <button class="btn-primary" @click="router.push('/atendimento-novo')">
+        + Novo Atendimento
       </button>
     </div>
 
@@ -25,9 +26,9 @@
           <tr v-for="a in lista" :key="a.id">
             <td>{{ formatarData(a.data) }}</td>
             <td>{{ a.hora }}</td>
-            <td style="font-weight: 600;">{{ a.nome_cliente }}</td>
-            <td>{{ a.nome_profissional }}</td>
-            <td>{{ a.nome_servico }}</td>
+            <td style="font-weight: 600; color: #1f2937;">{{ a.nome_cliente }}</td>
+            <td style="color: #881337; font-weight: 500;">{{ a.nome_profissional || '-' }}</td>
+            <td>{{ a.nome_servico || '-' }}</td>
             <td>
               <span :class="['status-badge', getStatusClass(a.status)]">
                 {{ a.status || 'Agendado' }}
@@ -35,7 +36,8 @@
             </td>
             <td>
               <div class="actions">
-                <button class="btn-icon edit" @click="editar(a.id)" title="Editar Status/Detalhes">
+                <!-- Edição também vai para AtendimentoNovo para editar serviço/preço -->
+                <button class="btn-icon edit" @click="editar(a.id)" title="Editar Detalhes">
                   <Edit size="18" />
                 </button>
                 <button class="btn-icon delete" @click="excluir(a.id)" title="Excluir">
@@ -67,10 +69,12 @@ const lista = ref([])
 
 onMounted(async () => {
   try {
+    // Traz a lista completa (JOIN de agendamento + atendimento + serviço + profissional)
     const res = await agendamentoService.getAll()
     lista.value = res.data
   } catch (error) {
     console.error("Erro ao carregar atendimentos", error)
+    alert("Não foi possível carregar a lista de atendimentos.")
   }
 })
 
@@ -91,17 +95,18 @@ function getStatusClass(status) {
 }
 
 function editar(id) {
-  router.push(`/agendamento-novo/${id}`)
+  // CORREÇÃO: Edição também vai para a rota de atendimento-novo
+  router.push(`/atendimento-novo/${id}`)
 }
 
 async function excluir(id) {
-  if(!confirm("Tem certeza que deseja excluir este agendamento?")) return;
+  if(!confirm("Tem certeza que deseja excluir este registro?")) return;
   
   try {
     await agendamentoService.remove(id)
     lista.value = lista.value.filter(a => a.id !== id)
   } catch (e) {
-    alert("Erro ao excluir o agendamento.")
+    alert("Erro ao excluir o atendimento.")
   }
 }
 </script>
@@ -136,12 +141,13 @@ async function excluir(id) {
   border-radius: 12px;
   box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
   overflow: hidden;
-  overflow-x: auto; 
+  overflow-x: auto;
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 800px;
+  min-width: 900px; 
 }
 
 th {
