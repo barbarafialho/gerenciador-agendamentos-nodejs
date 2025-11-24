@@ -3,18 +3,28 @@
     <aside class="sidebar">
       <div class="brand">
         <div class="logo-icon">MB</div>
-        <span class="logo-text">Mon Biju Salon</span>
+        <span class="logo-text">Mon Biju</span>
       </div>
 
       <nav class="nav-menu">
-        <router-link 
-          v-for="item in menuItems" 
-          :key="item.path" 
-          :to="item.path"
-          class="nav-link"
-        >
-          <component :is="item.icon" class="nav-icon" />
-          {{ item.label }}
+        <router-link to="/dashboard" class="nav-link">
+          <LayoutDashboard class="nav-icon" /> Dashboard
+        </router-link>
+        
+        <router-link to="/agendamentos" class="nav-link">
+          <Calendar class="nav-icon" /> Agendamentos
+        </router-link>
+
+        <router-link to="/atendimentos" class="nav-link">
+          <ClipboardList class="nav-icon" /> Atendimentos
+        </router-link>
+
+        <router-link to="/profissionais" class="nav-link">
+          <Users class="nav-icon" /> Profissionais
+        </router-link>
+
+        <router-link to="/servicos" class="nav-link">
+          <Scissors class="nav-icon" /> Serviços
         </router-link>
       </nav>
     </aside>
@@ -26,14 +36,7 @@
 </template>
 
 <script setup>
-import { LayoutDashboard, Calendar, Users, Scissors } from 'lucide-vue-next'
-
-const menuItems = [
-  { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-  { label: 'Agendamentos', path: '/atendimentos', icon: Calendar },
-  { label: 'Profissionais', path: '/profissionais', icon: Users },
-  { label: 'Serviços', path: '/servicos', icon: Scissors }
-]
+import { LayoutDashboard, Calendar, Users, Scissors, ClipboardList } from 'lucide-vue-next'
 </script>
 
 <style scoped>

@@ -8,7 +8,7 @@ const create = (data) => api.post('/agendamentos', data)
 
 const update = (id, data) => api.put(`/agendamentos/${id}`, data)
 
-const remove = (id) => api.post(`/agendamentos/delete/${id}`)
+const remove = (id) => api.delete(`/agendamentos/${id}`)
 
 export default {
   getAll,
