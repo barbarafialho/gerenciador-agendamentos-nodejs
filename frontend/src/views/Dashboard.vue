@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import agendamentoService from '@/services/agendamentoService'
-import profissionalService from '@/services/profissionalService'
-import servicoService from '@/services/servicoService'
+import profissionalService from '@/services/profissionalService' 
+import servicoService from '@/services/servicoService'         
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import { Calendar, Scissors, Users } from 'lucide-vue-next'
 
@@ -15,10 +15,20 @@ const listaHoje = ref([])
 
 onMounted(() => carregar())
 
+function formatarDataParaFiltro(data) {
+  const d = data instanceof Date ? data : new Date(data);
+  const month = '' + (d.getMonth() + 1);
+  const day = '' + d.getDate();
+  const year = d.getFullYear();
+
+  return [year, month.padStart(2, '0'), day.padStart(2, '0')].join('-');
+}
+
+
 async function carregar() {
   try {
     carregando.value = true
-    const hoje = new Date().toISOString().split('T')[0]
+    const hojeFiltro = formatarDataParaFiltro(new Date())
 
     const [resAgend, resProf, resServ] = await Promise.all([
       agendamentoService.getAll(),
@@ -27,15 +37,18 @@ async function carregar() {
     ])
 
     const agendamentos = resAgend.data || []
-    listaHoje.value = agendamentos.filter(a => a.data && a.data.startsWith(hoje))
+
+    listaHoje.value = agendamentos.filter(a => {
+        return a.data && String(a.data).startsWith(hojeFiltro);
+    });
+
     atendimentosHoje.value = listaHoje.value.length
 
     totalProfissionais.value = resProf.data ? resProf.data.length : 0
-
     totalServicos.value = resServ.data ? resServ.data.length : 0
 
   } catch (e) {
-    erro.value = "Erro ao carregar dashboard. Verifique a conexão."
+    erro.value = "Não foi possível carregar os dados."
     console.error(e)
   } finally {
     carregando.value = false
@@ -65,7 +78,7 @@ async function carregar() {
         <div class="stat-card">
           <div class="icon-box purple"><Users /></div>
           <div class="stat-info">
-            <h3>Profissionais</h3>
+            <h3>Profissionais Cadastrados</h3>
             <p class="stat-value">{{ totalProfissionais }}</p>
           </div>
         </div>
@@ -80,25 +93,25 @@ async function carregar() {
       </div>
 
       <div class="recent-section">
-        <h2>Atendimentos do Dia</h2>
+        <h2>Agendamentos do dia:</h2>
         
         <div class="table-container">
           <table>
             <thead>
               <tr>
                 <th>Horário</th>
-                <th>Cliente</th>
+                <th>Cliente</th>              
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="item in listaHoje" :key="item.id">
                 <td style="font-weight: bold; color: #e11d48;">{{ item.hora }}</td>
-                <td>{{ item.nome_cliente }}</td>
-                <td><span class="badge">{{ item.status || 'Agendado' }}</span></td>
+                <td>{{ item.nome_cliente }}</td>                
+                <td>{{ item.status }}</td>
               </tr>
               <tr v-if="listaHoje.length === 0">
-                <td colspan="3" class="empty-state">Nenhum atendimento para hoje.</td>
+                <td colspan="5" class="empty-state">Nenhum atendimento para hoje.</td>
               </tr>
             </tbody>
           </table>
