@@ -101,7 +101,3 @@ A modelagem foi feita para representar o funcionamento de um salão de beleza, c
 Fornecer uma solução simples e funcional para gerenciar agendamentos em um salão de beleza, facilitando a visualização de horários, serviços disponíveis e profissionais responsáveis.
 
 ---
-
-## Status do Projeto
-
-Em desenvolvimento, com integração completa entre backend e frontend, e estrutura pronta para evolução futura.
